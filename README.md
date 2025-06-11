@@ -15,7 +15,7 @@ Tasks:
 * provide (or describe) mechanism how database objects can be initialized
 * dockerize services
 * provide docker compose file
-* 
+  
 # Movies
 Movies have properties as title, year, description, list of actors, some pictures, etc. (as identifier use imdbID).
 Implement REST operations to support basic UI requirements:
