@@ -1,0 +1,5 @@
+# Build all services
+mvn clean package
+
+# Start everything
+docker-compose up --build
