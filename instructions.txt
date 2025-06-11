@@ -1,4 +1,4 @@
-# Build all services
+# Build all services, actors-service and movies-service
 mvn clean package
 
 # Start everything
