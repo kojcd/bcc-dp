@@ -9,7 +9,7 @@ import si.src.bcc.movies.model.Movie;
 
 public interface MovieRepository extends JpaRepository<Movie, String> {
 
-    @Query("SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+    @Query("SELECT m FROM Movie m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR LOWER(m.description) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Movie> searchMovies(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     Page<Movie> findAll(Pageable pageable);

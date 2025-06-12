@@ -1,10 +1,10 @@
-package si.src.bcc.actors.util;
+package si.src.bcc.movies.util;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import si.src.bcc.actors.config.JwtConfig;
+import si.src.bcc.movies.config.JwtConfig;
 import javax.crypto.SecretKey;
 import java.util.Date;
 

@@ -20,20 +20,18 @@ server:
   port: 8082
 
 jwt:
-  secret: bccTest2025!
   expiration: 86400000 # 24 hours in milliseconds
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+    enabled: true
+    disable-swagger-default-url: true
   api-docs:
     path: /v3/api-docs
+    enabled: true
 
 logging:
   level:
     org.springframework.security: DEBUG
     si.src.bcc.actors: DEBUG
-
-sql:
-  init:
-    mode: always

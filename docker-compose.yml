@@ -29,7 +29,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bcc_db
       SPRING_DATASOURCE_USERNAME: movies_user
       SPRING_DATASOURCE_PASSWORD: movies_pass
-      JWT_SECRET: bccTest2025!
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,7 +50,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bcc_db
       SPRING_DATASOURCE_USERNAME: actors_user
       SPRING_DATASOURCE_PASSWORD: actors_pass
-      JWT_SECRET: bccTest2025!
     depends_on:
       postgres:
         condition: service_healthy

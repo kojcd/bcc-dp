@@ -19,7 +19,6 @@ server:
   address: 0.0.0.0
 
 jwt:
-  secret: bccTest2025!
   expiration: 86400000 # 24 hours in milliseconds
 
 springdoc:
@@ -28,10 +27,10 @@ springdoc:
     enabled: true
     disable-swagger-default-url: true
   api-docs:
-    path: /api-docs
+    path: /v3/api-docs
     enabled: true
 
 logging:
   level:
     org.springframework.security: DEBUG
-    si.src.bcc.actors: DEBUG 
+    si.src.bcc.actors: DEBUG

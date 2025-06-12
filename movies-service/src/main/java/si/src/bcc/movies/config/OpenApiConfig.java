@@ -1,4 +1,4 @@
-package si.src.bcc.actors.config;
+package si.src.bcc.movies.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -18,8 +18,8 @@ public class OpenApiConfig {
 
         return new OpenAPI()
                 .info(new Info()
-                        .title("BCC Actors Service API")
-                        .description("REST API for managing actors (and their movies)")
+                        .title("BCC Movies Service API")
+                        .description("REST API for managing movies (and their actors, pictures...)")
                         .version("1.0")
                         .contact(new Contact()
                                 .name("BCC Team")
