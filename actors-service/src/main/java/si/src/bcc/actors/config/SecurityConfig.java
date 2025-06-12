@@ -24,7 +24,16 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/actors/search", "/api/actors/stats/requests").permitAll()
+                        // Swagger UI v3 (OpenAPI)
+                        .requestMatchers("/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
+                        // Public endpoints
+                        .requestMatchers("/api/actors/search",
+                                "/api/actors/stats/requests").permitAll()
+                        // Protected endpoints
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
