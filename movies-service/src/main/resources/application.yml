@@ -2,15 +2,38 @@ spring:
   application:
     name: MoviesService
   datasource:
-    url: jdbc:postgresql://postgres:5432/bcc_db
+    url: jdbc:postgresql://localhost:5432/bcc_db
     username: movies_user
     password: movies_pass
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
-      hibernate.default_schema: movies
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: movies
   sql:
     init:
       mode: always
+
+server:
+  port: 8081
+
+jwt:
+  secret: bccTest2025!
+  expiration: 86400000 # 24 hours in milliseconds
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    si.src.bcc.movies: DEBUG
