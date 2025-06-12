@@ -8,20 +8,27 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import si.src.bcc.actors.config.JwtConfig;
+
+import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.security.Key;
 import java.util.ArrayList;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.secret}")
-    private String jwtSecret;
+    private final SecretKey jwtKey;
+
+    @Autowired
+    public JwtAuthenticationFilter(JwtConfig jwtConfig) {
+        this.jwtKey = jwtConfig.jwtKey();
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,9 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
             try {
-                Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
                 Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(key)
+                        .setSigningKey(jwtKey)
                         .build()
                         .parseClaimsJws(jwt)
                         .getBody();

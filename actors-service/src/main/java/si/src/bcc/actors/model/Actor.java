@@ -15,7 +15,8 @@ import java.util.Set;
 @Table(name = "actors")
 public class Actor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "actor_id_seq")
+    @SequenceGenerator(name = "actor_id_seq", sequenceName = "actor_id_seq", schema = "actors", allocationSize = 1)
     private Long id;
     
     @NotBlank(message = "First name is required")
@@ -33,7 +34,7 @@ public class Actor {
     private LocalDate bornDate;
     
     @ElementCollection
-    @CollectionTable(name = "actor_movies", joinColumns = @JoinColumn(name = "actor_id"))
+    @CollectionTable(name = "actor_movies", schema = "actors", joinColumns = @JoinColumn(name = "actor_id"))
     @Column(name = "movie_imdb_id")
     private Set<String> movies = new HashSet<>();
     

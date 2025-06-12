@@ -32,7 +32,8 @@ public class SecurityConfig {
                                 "/webjars/**").permitAll()
                         // Public endpoints
                         .requestMatchers("/api/actors/search",
-                                "/api/actors/stats/requests").permitAll()
+                                "/api/actors/stats/requests",
+                                "/api/auth/test-token").permitAll()
                         // Protected endpoints
                         .anyRequest().authenticated()
                 )
