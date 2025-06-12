@@ -31,4 +31,7 @@ Implement REST operations to support basic UI requirements:
 * list actors with pagination support
 * CRUD operations
 
-Author: Damjan Kojc, damjan.kojc@gmail.com
+Prepared by: src.si
+Implemented: Damjan Kojc, damjan.kojc@gmail.com
+Used: SpringBoot 3.5.0, Eclipse Temurin JDK 21, PostgreSQL 17.5
+
