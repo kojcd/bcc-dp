@@ -17,6 +17,7 @@ import si.src.bcc.actors.model.Actor;
 import si.src.bcc.actors.service.ActorService;
 import si.src.bcc.actors.service.impl.ActorServiceImpl;
 import java.util.concurrent.TimeUnit;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/actors")
@@ -39,6 +40,9 @@ public class ActorController {
     public ResponseEntity<Page<ActorResponse>> getAllActors(
             @Parameter(description = "Pagination parameters") Pageable pageable) {
         Page<Actor> actors = actorService.getAllActors(pageable);
+        if (actors.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         Page<ActorResponse> response = actors.map(actorMapper::toResponse);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(30, TimeUnit.MINUTES))
@@ -61,7 +65,8 @@ public class ActorController {
             @Parameter(description = "Actor details") @Valid @RequestBody ActorRequest request) {
         Actor actor = actorMapper.toEntity(request);
         Actor createdActor = actorService.createActor(actor);
-        return ResponseEntity.ok(actorMapper.toResponse(createdActor));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(actorMapper.toResponse(createdActor));
     }
 
     @Operation(summary = "Update actor", description = "Updates an existing actor's details")
@@ -88,7 +93,13 @@ public class ActorController {
     public ResponseEntity<Page<ActorResponse>> searchActors(
             @Parameter(description = "Search term") @RequestParam String searchTerm,
             @Parameter(description = "Pagination parameters") Pageable pageable) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         Page<Actor> actors = actorService.searchActors(searchTerm, pageable);
+        if (actors.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
         Page<ActorResponse> response = actors.map(actorMapper::toResponse);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(30, TimeUnit.MINUTES))

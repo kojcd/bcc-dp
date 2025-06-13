@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import si.src.bcc.movies.model.Movie;
 import si.src.bcc.movies.repository.MovieRepository;
 import si.src.bcc.movies.service.MovieService;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -36,8 +35,7 @@ public class MovieServiceImpl implements MovieService {
     @Cacheable(value = "movie", key = "#imdbId")
     public Movie getMovieById(String imdbId) {
         incrementRequestCounter();
-        return movieRepository.findById(imdbId)
-                .orElseThrow(() -> new EntityNotFoundException("Movie not found with imdbId: " + imdbId));
+        return movieRepository.findById(imdbId).orElse(null);
     }
 
     @Override
@@ -52,7 +50,7 @@ public class MovieServiceImpl implements MovieService {
     public Movie updateMovie(String imdbId, Movie movie) {
         incrementRequestCounter();
         if (!movieRepository.existsById(imdbId)) {
-            throw new EntityNotFoundException("Movie not found with imdbId: " + imdbId);
+            return null;
         }
         movie.setImdbId(imdbId);
         return movieRepository.save(movie);
@@ -60,12 +58,13 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @CacheEvict(value = {"movies", "movie"}, allEntries = true)
-    public void deleteMovie(String imdbId) {
+    public boolean deleteMovie(String imdbId) {
         incrementRequestCounter();
         if (!movieRepository.existsById(imdbId)) {
-            throw new EntityNotFoundException("Movie not found with imdbId: " + imdbId);
+            return false;
         }
         movieRepository.deleteById(imdbId);
+        return true;
     }
 
     @Override

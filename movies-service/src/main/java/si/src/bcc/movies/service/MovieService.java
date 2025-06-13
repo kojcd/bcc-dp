@@ -9,6 +9,6 @@ public interface MovieService {
     Movie getMovieById(String imdbId);
     Movie createMovie(Movie movie);
     Movie updateMovie(String imdbId, Movie movie);
-    void deleteMovie(String imdbId);
+    boolean deleteMovie(String imdbId);
     Page<Movie> searchMovies(String searchTerm, Pageable pageable);
 }

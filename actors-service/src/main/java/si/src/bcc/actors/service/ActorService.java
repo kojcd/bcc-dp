@@ -9,6 +9,6 @@ public interface ActorService {
     Actor getActorById(Long id);
     Actor createActor(Actor actor);
     Actor updateActor(Long id, Actor actor);
-    void deleteActor(Long id);
+    boolean deleteActor(Long id);
     Page<Actor> searchActors(String searchTerm, Pageable pageable);
 }

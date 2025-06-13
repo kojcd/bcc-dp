@@ -36,8 +36,7 @@ public class ActorServiceImpl implements ActorService {
     @Cacheable(value = "actor", key = "#id")
     public Actor getActorById(Long id) {
         incrementRequestCounter();
-        return actorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Actor not found with id: " + id));
+        return actorRepository.findById(id).orElse(null);
     }
     
     @Override
@@ -52,7 +51,7 @@ public class ActorServiceImpl implements ActorService {
     public Actor updateActor(Long id, Actor actor) {
         incrementRequestCounter();
         if (!actorRepository.existsById(id)) {
-            throw new EntityNotFoundException("Actor not found with id: " + id);
+            return null;
         }
         actor.setId(id);
         return actorRepository.save(actor);
@@ -60,12 +59,13 @@ public class ActorServiceImpl implements ActorService {
     
     @Override
     @CacheEvict(value = {"actors", "actor"}, allEntries = true)
-    public void deleteActor(Long id) {
+    public boolean deleteActor(Long id) {
         incrementRequestCounter();
         if (!actorRepository.existsById(id)) {
-            throw new EntityNotFoundException("Actor not found with id: " + id);
+            return false;
         }
         actorRepository.deleteById(id);
+        return true;
     }
     
     @Override
