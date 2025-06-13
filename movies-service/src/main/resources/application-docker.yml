@@ -1,6 +1,8 @@
 spring:
+  application:
+    name: MoviesService
   datasource:
-    url: jdbc:postgresql://postgres:5432/bcc_db
+    url: jdbc:postgresql://localhost:5432/bcc_db
     username: movies_user
     password: movies_pass
     driver-class-name: org.postgresql.Driver
@@ -10,13 +12,26 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: movies
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=1000,expireAfterWrite=30m
 
 server:
   port: 8080
-  address: 0.0.0.0
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,text/css,application/javascript
+    min-response-size: 1024
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    max-connections: 10000
+    accept-count: 100
+    connection-timeout: 20000
 
 jwt:
   expiration: 86400000 # 24 hours in milliseconds
@@ -30,7 +45,21 @@ springdoc:
     path: /v3/api-docs
     enabled: true
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
 logging:
   level:
-    org.springframework.security: DEBUG
+    root: INFO
     si.src.bcc.movies: DEBUG
+    org.springframework.cache: DEBUG

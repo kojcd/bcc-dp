@@ -30,6 +30,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/webjars/**").permitAll()
+                        // Actuator endpoints
+
+                        .requestMatchers("/actuator/**").permitAll()
                         // Public endpoints
                         .requestMatchers("/api/movies/search",
                                 "/api/movies/stats/requests",
