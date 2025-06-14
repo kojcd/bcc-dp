@@ -54,6 +54,9 @@ public class ActorController {
     public ResponseEntity<ActorResponse> getActorById(
             @Parameter(description = "Actor ID") @PathVariable Long id) {
         Actor actor = actorService.getActorById(id);
+        if (actor == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(30, TimeUnit.MINUTES))
                 .body(actorMapper.toResponse(actor));
@@ -75,6 +78,9 @@ public class ActorController {
             @Parameter(description = "Actor ID") @PathVariable Long id,
             @Parameter(description = "Updated actor details") @Valid @RequestBody ActorRequest request) {
         Actor actor = actorService.getActorById(id);
+        if (actor == null) {
+            return ResponseEntity.notFound().build();
+        }
         actorMapper.updateEntity(actor, request);
         Actor updatedActor = actorService.updateActor(id, actor);
         return ResponseEntity.ok(actorMapper.toResponse(updatedActor));
@@ -84,7 +90,10 @@ public class ActorController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteActor(
             @Parameter(description = "Actor ID") @PathVariable Long id) {
-        actorService.deleteActor(id);
+        boolean deleted = actorService.deleteActor(id);
+        if (!deleted) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.noContent().build();
     }
 
