@@ -11,7 +11,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        default_schema: actors
+        default_schema: movies
         hbm2ddl:
           auto: create-drop
           import_files: classpath:schema.sql
@@ -22,7 +22,7 @@ spring:
       password: test
 
 jwt:
-  expiration: 86400000 # 24 hours in milliseconds
+  expiration: 86400000  # 24 hours in milliseconds
 
 server:
   port: 0  # Random port for testing

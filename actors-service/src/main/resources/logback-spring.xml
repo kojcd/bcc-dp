@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %highlight(%-5level) [%blue(%t)] %yellow(%C{1}): %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <!-- LOG everything at INFO level -->
+    <root level="info">
+        <appender-ref ref="Console" />
+    </root>
+
+    <!-- LOG "si.src.bcc.actors*" at DEBUG level -->
+    <logger name="si.src.bcc.actors" level="debug" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+
+    <!-- LOG Spring Security at INFO level -->
+    <logger name="org.springframework.security" level="info" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+
+    <!-- LOG Hibernate SQL at DEBUG level -->
+    <logger name="org.hibernate.SQL" level="debug" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+</configuration>
