@@ -7,16 +7,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import si.src.bcc.movies.config.TestJwtConfig;
 import si.src.bcc.movies.dto.MovieRequest;
 import si.src.bcc.movies.dto.MovieResponse;
 import si.src.bcc.movies.repository.MovieRepository;
 import si.src.bcc.movies.service.MovieService;
 import si.src.bcc.movies.util.TestJwtUtil;
+
+import java.time.Year;
 import java.util.HashSet;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,8 +46,8 @@ class MoviesServiceApplicationTests {
 	@BeforeEach
 	void setUp() {
 		headers = new HttpHeaders();
-		String token = jwtUtil.generateToken("test-user");
-		headers.setBearerAuth(token);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(jwtUtil.generateToken("test-user"));
 	}
 
 	@Test
@@ -56,7 +55,7 @@ class MoviesServiceApplicationTests {
 		// Create test data
 		MovieRequest request = new MovieRequest();
 		request.setTitle("Testni Film");
-		request.setYear(2024);
+		request.setYear(Year.of(2024));
 		request.setImdbId("tt1234567");
 		request.setDescription("Testni opis filma");
 		Set<Long> actors = new HashSet<>();
@@ -81,7 +80,7 @@ class MoviesServiceApplicationTests {
 		assertThat(createResponse.getBody()).isNotNull();
 		assertThat(createResponse.getBody().getTitle()).isEqualTo("Testni Film");
 		assertThat(createResponse.getBody().getImdbId()).isEqualTo("tt1234567");
-		assertThat(createResponse.getBody().getYear()).isEqualTo(2024);
+		assertThat(createResponse.getBody().getYear()).isEqualTo(Year.of(2024));
 		assertThat(createResponse.getBody().getDescription()).isEqualTo("Testni opis filma");
 		assertThat(createResponse.getBody().getActors()).hasSize(2);
 		assertThat(createResponse.getBody().getPictures()).hasSize(2);
@@ -103,7 +102,7 @@ class MoviesServiceApplicationTests {
 		assertThat(getResponse.getBody()).isNotNull();
 		assertThat(getResponse.getBody().getImdbId()).isEqualTo(movieId);
 		assertThat(getResponse.getBody().getTitle()).isEqualTo("Testni Film");
-		assertThat(getResponse.getBody().getYear()).isEqualTo(2024);
+		assertThat(getResponse.getBody().getYear()).isEqualTo(Year.of(2024));
 		assertThat(getResponse.getBody().getDescription()).isEqualTo("Testni opis filma");
 		assertThat(getResponse.getBody().getActors()).hasSize(2);
 		assertThat(getResponse.getBody().getActors()).contains(1L, 2L);

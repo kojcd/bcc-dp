@@ -1,10 +1,12 @@
 package si.src.bcc.movies.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import java.time.Year;
 import java.util.Set;
 
 @Data
@@ -19,7 +21,8 @@ public class MovieRequest {
 
     @NotNull(message = "Year is required")
     @PastOrPresent(message = "Year must be in the past or present")
-    private Integer year;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy")
+    private Year year;
 
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;

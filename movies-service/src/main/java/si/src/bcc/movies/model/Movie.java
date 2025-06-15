@@ -9,6 +9,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.time.Year;
 
 @Data
 @Entity
@@ -28,7 +29,7 @@ public class Movie {
     @NotNull(message = "Year is required")
     @PastOrPresent(message = "Year must be in the past or present")
     @Column(name = "year", nullable = false)
-    private Integer year;
+    private Year year;
 
     @Size(max = 1000, message = "Description must not exceed 1000 characters")
     @Column(name = "description", length = 1000)
