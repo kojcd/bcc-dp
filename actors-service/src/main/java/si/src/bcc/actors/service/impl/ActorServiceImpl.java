@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import si.src.bcc.actors.model.Actor;
 import si.src.bcc.actors.repository.ActorRepository;
 import si.src.bcc.actors.service.ActorService;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -24,6 +25,16 @@ public class ActorServiceImpl implements ActorService {
     @Autowired
     public ActorServiceImpl(ActorRepository actorRepository) {
         this.actorRepository = actorRepository;
+    }
+
+    @Override
+    @Cacheable(value = "actors", key = "'all'")
+    public List<Actor> getAllActors() {
+        log.debug("Fetching all actors");
+        incrementRequestCounter();
+        List<Actor> actors = actorRepository.findAll();
+        log.debug("Found {} actors", actors.size());
+        return actors;
     }
 
     @Override
@@ -96,13 +107,26 @@ public class ActorServiceImpl implements ActorService {
         return actorRepository.searchActors(searchTerm, pageable);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return actorRepository.existsById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByName(String firstName, String lastName) {
+        return actorRepository.existsByFirstNameAndLastName(firstName, lastName);
+    }
+
     private void incrementRequestCounter() {
         long count = requestCounter.incrementAndGet();
         log.debug("Request counter incremented to: {}", count);
     }
 
+    @Override
     public long getRequestCount() {
         log.debug("Request counter returned: {}", requestCounter.get());
         return requestCounter.get();
     }
-} 
+}

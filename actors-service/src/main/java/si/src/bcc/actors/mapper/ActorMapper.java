@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 import si.src.bcc.actors.dto.ActorRequest;
 import si.src.bcc.actors.dto.ActorResponse;
 import si.src.bcc.actors.model.Actor;
+import java.util.HashSet;
+import java.util.Optional;
 
 @Component
 public class ActorMapper {
@@ -13,7 +15,7 @@ public class ActorMapper {
         actor.setFirstName(request.getFirstName());
         actor.setLastName(request.getLastName());
         actor.setBornDate(request.getBornDate());
-        actor.setMovies(request.getMovies());
+        actor.setMovies(Optional.ofNullable(request.getMovies()).orElseGet(HashSet::new));
         return actor;
     }
     
@@ -23,7 +25,7 @@ public class ActorMapper {
         response.setFirstName(actor.getFirstName());
         response.setLastName(actor.getLastName());
         response.setBornDate(actor.getBornDate());
-        response.setMovies(actor.getMovies());
+        response.setMovies(Optional.ofNullable(actor.getMovies()).orElseGet(HashSet::new));
         response.setCreatedAt(actor.getCreatedAt());
         response.setUpdatedAt(actor.getUpdatedAt());
         return response;
@@ -33,6 +35,6 @@ public class ActorMapper {
         actor.setFirstName(request.getFirstName());
         actor.setLastName(request.getLastName());
         actor.setBornDate(request.getBornDate());
-        actor.setMovies(request.getMovies());
+        actor.setMovies(Optional.ofNullable(request.getMovies()).orElseGet(HashSet::new));
     }
 } 

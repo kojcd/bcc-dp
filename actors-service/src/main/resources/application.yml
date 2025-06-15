@@ -34,6 +34,8 @@ server:
 
 jwt:
   expiration: 86400000 # 24 hours in milliseconds
+  username: demo
+  password: password123
 
 springdoc:
   swagger-ui:

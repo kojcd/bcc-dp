@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/swagger-resources") ||
+                path.startsWith("/swagger-ui.html") ||
                 path.startsWith("/webjars") ||
                 path.startsWith("/actuator");
     }
@@ -44,6 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
+            // TODO: validate JWT token, not implemented, just for demo purposes (suggested usage Keycloak)
             try {
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(jwtKey)
@@ -52,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .getBody();
                 
                 String username = claims.getSubject();
-                
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         username, null, new ArrayList<>());
                 
