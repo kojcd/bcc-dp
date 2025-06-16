@@ -6,12 +6,36 @@ import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import java.util.concurrent.TimeUnit;
+import si.src.bcc.actors.properties.CacheProperties;
 
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
+    private final CacheProperties cacheProperties;
+
+    public CacheConfig(CacheProperties cacheProperties) {
+        this.cacheProperties = cacheProperties;
+    }
+
+    // From properties
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(Caffeine.from(cacheProperties.getCaffeine().getSpec()));
+        return cacheManager;
+    }
+    /*
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        Caffeine<Object, Object> caffeineSpec = Caffeine.from(cacheProperties.getCaffeine().getSpec()).recordStats();  // THIS is required for metrics
+        cacheManager.setCaffeine(caffeineSpec);
+        return cacheManager;
+    }
+    */
+
+    /*
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
@@ -21,4 +45,5 @@ public class CacheConfig {
                 .recordStats());
         return cacheManager;
     }
+    */
 }
