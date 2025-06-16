@@ -31,36 +31,33 @@ Implement REST operations to support basic UI requirements:
 * list actors with pagination support
 * CRUD operations
 
-Prepared by: src.si
-Implemented: Damjan Kojc, damjan.kojc@gmail.com
-Used: SpringBoot 3.5.0 (with springdoc-openapi 2.8.9), Eclipse Temurin JDK 21, PostgreSQL 17.5
 ____________________________________
 
-# Notes to implementation of demo project
+# Implementation notes
 
-Swagger-UI (overview of REST API methods, available testing, /v3/api-docs):
+Swagger UI (overview of REST API methods, available testing, /v3/api-docs):
 * Movies Service: http://localhost:8081/swagger-ui/index.html , http://localhost:8081/v3/api-docs
 * Actors Service: http://localhost:8082/swagger-ui/index.html , http://localhost:8082/v3/api-docs
 
 Protect services with modern authorization mechanisms:
-* in both services I prepared endpoint for requesting JWT token with credentials demo/password123, credentials are stored in application.yml/application-docker.yml properties for demo purposes (suggested use of Keycloak):
-* /api/auth/test-token, REST method to get testing token
+* in both services I prepared endpoint for requesting JWT token with credentials demo/password123, credentials are stored in application.yml/application-docker.yml properties for demo purposes (suggested use of Keycloak)
+* /api/auth/test-token, REST method to get testing JWT token
 
 Database docker container 'postgres':
 * database (named bcc_db) is PostgreSQL database in additional container, every service has his own schema (independent): actors, movies
 * for running tests in both services is used H2 database
-* used the same JPA/Hibernate model
+* used is the same JPA/Hibernate model for H2 and PostgreSQL
 * init of database bcc_db and both schemas, users, privileges... is done with init.sql script in init-db/init.sql, tables in schemas are created with JPA/Hibernate from entities
 
 Docker containers 'actors-service' and 'movies-service' with both REST service applications:
 * independent deployable services with REST API (SpringBoot applications running on Apache Tomcat)
 
-HTTP cache mechanism and support the ability to handle a large number of HTTP GET requests:
+HTTP cache mechanism / support the ability to handle a large number of HTTP GET requests:
 * all is configurable via application.yml/application-docker.yml
-* used Caffeine cache is a high-performance cache library for Java - section 'spring.cache'
-* Apache Tomcat configuration - section 'server'.
+* used Caffeine cache is a high-performance cache library for Java - properties section 'spring.cache'
+* Apache Tomcat configuration - properties section 'server'.
 
-Docker compose file prepared. Also instructions, how to build and run. (instructions.txt)
+Docker compose file prepared (docker-compose.yml). Also instructions, how to build and run (instructions.txt). 
 
 Availible metrics:
 * In-memory request counter (AtomicLong) in both services
@@ -69,7 +66,9 @@ Availible metrics:
 * Request duration measurements
 
 All of these metrics are accessible through the Actuator endpoints without any performance impact on the actual service operations.
+
 Movies Service (port 8081):
+
 1. Health Check:
    http://localhost:8081/actuator/health
 
@@ -113,3 +112,9 @@ Actors Service (port 8082):
 
 6. Request Counter (custom endpoint):
    http://localhost:8082/api/actors/stats/requests
+
+____________________________________
+   
+* Prepared by: src.si
+* Implemented by: Damjan Kojc, damjan.kojc@gmail.com
+* Used: SpringBoot 3.5.0 (with springdoc-openapi 2.8.9), Eclipse Temurin JDK 21 LTS, PostgreSQL 17.5
