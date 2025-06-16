@@ -1,5 +1,7 @@
 package si.src.bcc.actors.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
@@ -18,6 +20,8 @@ public class ActorRequest {
     private String lastName;
     
     @Past(message = "Born date must be in the past")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Schema(type = "string", format = "date", example = "2025-06-16")
     private LocalDate bornDate;
     
     private Set<String> movies;

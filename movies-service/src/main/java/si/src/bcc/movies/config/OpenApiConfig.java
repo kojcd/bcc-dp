@@ -4,13 +4,35 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
+import org.springdoc.core.customizers.PropertyCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Configuration
 public class OpenApiConfig {
+
+    @Bean
+    public PropertyCustomizer dateTimeCustomizer() {
+        return (property, type) -> {
+            if (type.equals(LocalDateTime.class)) {
+                return new Schema<String>()
+                        .type("string")
+                        .format("date-time")
+                        .example("2025-06-16T14:50:57.543Z");
+            } else if (type.equals(LocalDate.class)) {
+                return new Schema<String>()
+                        .type("string")
+                        .format("date")
+                        .example("2025-06-16");
+            }
+            return property;
+        };
+    }
 
     @Bean
     public OpenAPI actorsOpenAPI() {
