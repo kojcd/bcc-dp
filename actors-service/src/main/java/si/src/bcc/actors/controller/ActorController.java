@@ -168,7 +168,7 @@ public class ActorController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Search actors with pagination support", description = "Searches actors by firstName or lastName with searchTerm with pagination support")
+    @Operation(summary = "Search actors with pagination support", description = "Searches actors by firstName or lastName with searchTerm and pagination support")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search completed successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid search parameters"),

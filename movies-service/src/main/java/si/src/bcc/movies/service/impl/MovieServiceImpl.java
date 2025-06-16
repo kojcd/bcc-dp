@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import si.src.bcc.movies.model.Movie;
 import si.src.bcc.movies.repository.MovieRepository;
 import si.src.bcc.movies.service.MovieService;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -24,6 +25,16 @@ public class MovieServiceImpl implements MovieService {
     @Autowired
     public MovieServiceImpl(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
+    }
+
+    @Override
+    @Cacheable(value = "movies", key = "'all'")
+    public List<Movie> getAllMovies() {
+        log.debug("Fetching all movies");
+        incrementRequestCounter();
+        List<Movie> movies = movieRepository.findAll();
+        log.debug("Found {} movies", movies.size());
+        return movies;
     }
 
     @Override
@@ -94,6 +105,12 @@ public class MovieServiceImpl implements MovieService {
     public Page<Movie> searchMovies(String searchTerm, Pageable pageable) {
         incrementRequestCounter();
         return movieRepository.searchMovies(searchTerm, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsByImdbID(String imdbID) {
+        return movieRepository.existsById(imdbID);
     }
 
     private void incrementRequestCounter() {
