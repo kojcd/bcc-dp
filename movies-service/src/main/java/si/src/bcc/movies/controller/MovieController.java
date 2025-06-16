@@ -178,7 +178,7 @@ public class MovieController {
     @GetMapping("/search")
     public ResponseEntity<Page<MovieResponse>> searchMovies(
             @Parameter(description = "Search term") @RequestParam String searchTerm,
-            @Parameter(description = "Pagination parameters") Pageable pageable) {
+            @ParameterObject Pageable pageable) {
         if (searchTerm == null || searchTerm.trim().isEmpty()) {
             throw new InvalidMovieDataException("searchTerm", "SearchTerm cannot be empty");
         }
