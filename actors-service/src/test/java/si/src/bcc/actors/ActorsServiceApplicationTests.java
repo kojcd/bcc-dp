@@ -7,19 +7,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import si.src.bcc.actors.config.TestJwtConfig;
-import si.src.bcc.actors.util.TestJwtUtil;
-import si.src.bcc.actors.model.Actor;
+import si.src.bcc.actors.dto.ActorRequest;
+import si.src.bcc.actors.dto.ActorResponse;
 import si.src.bcc.actors.repository.ActorRepository;
 import si.src.bcc.actors.service.ActorService;
+import si.src.bcc.actors.util.TestJwtUtil;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.core.ParameterizedTypeReference;
-import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 		"spring.main.allow-bean-definition-overriding=true"
@@ -54,21 +55,21 @@ class ActorsServiceApplicationTests {
 	@Test
 	void testCreateAndGetActor() {
 		// Create test data
-		Actor actor = new Actor();
-		actor.setFirstName("Test");
-		actor.setLastName("Actor");
-		actor.setBornDate(LocalDate.of(1990, 1, 1));
+		ActorRequest request = new ActorRequest();
+		request.setFirstName("Test");
+		request.setLastName("Actor");
+		request.setBornDate(LocalDate.of(1990, 1, 1));
 		Set<String> movies = new HashSet<>();
 		movies.add("tt1234567");
 		movies.add("tt7654321");
-		actor.setMovies(movies);
+		request.setMovies(movies);
 
 		// Test actor creation
-		HttpEntity<Actor> createRequest = new HttpEntity<>(actor, headers);
-		ResponseEntity<Actor> createResponse = restTemplate.postForEntity(
+		HttpEntity<ActorRequest> createRequest = new HttpEntity<>(request, headers);
+		ResponseEntity<ActorResponse> createResponse = restTemplate.postForEntity(
 				"http://localhost:" + port + "/api/actors",
 				createRequest,
-				Actor.class
+				ActorResponse.class
 		);
 
 		// Verify creation response
@@ -85,11 +86,11 @@ class ActorsServiceApplicationTests {
 
 		// Test actor retrieval
 		HttpEntity<Void> getRequest = new HttpEntity<>(headers);
-		ResponseEntity<Actor> getResponse = restTemplate.exchange(
+		ResponseEntity<ActorResponse> getResponse = restTemplate.exchange(
 				"http://localhost:" + port + "/api/actors/" + actorId,
 				HttpMethod.GET,
 				getRequest,
-				Actor.class
+				ActorResponse.class
 		);
 
 		// Verify retrieval response
@@ -109,24 +110,31 @@ class ActorsServiceApplicationTests {
 	@Test
 	void testUpdateActor() {
 		// First create an actor
-		Actor actor = new Actor();
-		actor.setFirstName("Original");
-		actor.setLastName("Name");
-		actor.setBornDate(LocalDate.of(1980, 1, 1));
-		Actor savedActor = actorService.createActor(actor);
+		ActorRequest request = new ActorRequest();
+		request.setFirstName("Original");
+		request.setLastName("Name");
+		request.setBornDate(LocalDate.of(1980, 1, 1));
+
+		HttpEntity<ActorRequest> createRequest = new HttpEntity<>(request, headers);
+		ResponseEntity<ActorResponse> createResponse = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest,
+				ActorResponse.class
+		);
+		ActorResponse savedActor = createResponse.getBody();
 
 		// Update the actor
-		Actor updateActor = new Actor();
-		updateActor.setFirstName("Updated");
-		updateActor.setLastName("Name");
-		updateActor.setBornDate(LocalDate.of(1980, 1, 1));
+		ActorRequest updateRequest = new ActorRequest();
+		updateRequest.setFirstName("Updated");
+		updateRequest.setLastName("Name");
+		updateRequest.setBornDate(LocalDate.of(1980, 1, 1));
 
-		HttpEntity<Actor> updateRequest = new HttpEntity<>(updateActor, headers);
-		ResponseEntity<Actor> updateResponse = restTemplate.exchange(
+		HttpEntity<ActorRequest> updateRequestEntity = new HttpEntity<>(updateRequest, headers);
+		ResponseEntity<ActorResponse> updateResponse = restTemplate.exchange(
 				"http://localhost:" + port + "/api/actors/" + savedActor.getId(),
 				HttpMethod.PUT,
-				updateRequest,
-				Actor.class
+				updateRequestEntity,
+				ActorResponse.class
 		);
 
 		// Verify update response
@@ -142,11 +150,18 @@ class ActorsServiceApplicationTests {
 	@Test
 	void testDeleteActor() {
 		// First create an actor
-		Actor actor = new Actor();
-		actor.setFirstName("Temp");
-		actor.setLastName("Actor");
-		actor.setBornDate(LocalDate.of(1995, 1, 1));
-		Actor savedActor = actorService.createActor(actor);
+		ActorRequest request = new ActorRequest();
+		request.setFirstName("Temp");
+		request.setLastName("Actor");
+		request.setBornDate(LocalDate.of(1995, 1, 1));
+
+		HttpEntity<ActorRequest> createRequest = new HttpEntity<>(request, headers);
+		ResponseEntity<ActorResponse> createResponse = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest,
+				ActorResponse.class
+		);
+		ActorResponse savedActor = createResponse.getBody();
 
 		// Delete the actor
 		HttpEntity<Void> deleteRequest = new HttpEntity<>(headers);
@@ -184,13 +199,12 @@ class ActorsServiceApplicationTests {
 
 	@Test
 	void testCreateActorWithInvalidData() {
-		Actor invalidActor = new Actor();
-		invalidActor.setFirstName("");
-		invalidActor.setLastName("");
-		invalidActor.setMovies(null);
-		invalidActor.setBornDate(LocalDate.now().plusDays(1)); // Future date
+		ActorRequest invalidRequest = new ActorRequest();
+		invalidRequest.setFirstName("");
+		invalidRequest.setLastName("");
+		invalidRequest.setBornDate(LocalDate.now().plusDays(1)); // Future date
 
-		HttpEntity<Actor> request = new HttpEntity<>(invalidActor, headers);
+		HttpEntity<ActorRequest> request = new HttpEntity<>(invalidRequest, headers);
 		ResponseEntity<String> response = restTemplate.postForEntity(
 				"http://localhost:" + port + "/api/actors",
 				request,
@@ -201,19 +215,16 @@ class ActorsServiceApplicationTests {
 
 	@Test
 	void testUpdateNonExistingActor() {
-		// Clean up
-		actorRepository.deleteById(999999L);
+		ActorRequest updateRequest = new ActorRequest();
+		updateRequest.setFirstName("Updated");
+		updateRequest.setLastName("Name");
+		updateRequest.setBornDate(LocalDate.of(1980, 1, 1));
 
-		Actor updateActor = new Actor();
-		updateActor.setFirstName("Updated");
-		updateActor.setLastName("Name");
-		updateActor.setBornDate(LocalDate.of(1980, 1, 1));
-
-		HttpEntity<Actor> updateRequest = new HttpEntity<>(updateActor, headers);
+		HttpEntity<ActorRequest> updateRequestEntity = new HttpEntity<>(updateRequest, headers);
 		ResponseEntity<String> response = restTemplate.exchange(
 				"http://localhost:" + port + "/api/actors/999999",
 				HttpMethod.PUT,
-				updateRequest,
+				updateRequestEntity,
 				String.class
 		);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -221,9 +232,6 @@ class ActorsServiceApplicationTests {
 
 	@Test
 	void testDeleteNonExistingActor() {
-		// Clean up
-		actorRepository.deleteById(999999L);
-
 		HttpEntity<Void> deleteRequest = new HttpEntity<>(headers);
 		ResponseEntity<String> response = restTemplate.exchange(
 				"http://localhost:" + port + "/api/actors/999999",
@@ -237,18 +245,25 @@ class ActorsServiceApplicationTests {
 	@Test
 	void testSearchActors() {
 		// Create test actor
-		Actor actor = new Actor();
-		actor.setFirstName("Search");
-		actor.setLastName("Name");
-		actor.setBornDate(LocalDate.of(1990, 1, 1));
-		Actor savedActor = actorService.createActor(actor);
+		ActorRequest request = new ActorRequest();
+		request.setFirstName("Search");
+		request.setLastName("Name");
+		request.setBornDate(LocalDate.of(1990, 1, 1));
+
+		HttpEntity<ActorRequest> createRequest = new HttpEntity<>(request, headers);
+		ResponseEntity<ActorResponse> createResponse = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest,
+				ActorResponse.class
+		);
+		ActorResponse savedActor = createResponse.getBody();
 
 		// Test search
-		HttpEntity<Void> request = new HttpEntity<>(headers);
+		HttpEntity<Void> searchRequest = new HttpEntity<>(headers);
 		ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
 				"http://localhost:" + port + "/api/actors/search?searchTerm=Search&page=0&size=10",
 				HttpMethod.GET,
-				request,
+				searchRequest,
 				new ParameterizedTypeReference<Map<String, Object>>() {}
 		);
 
@@ -265,17 +280,31 @@ class ActorsServiceApplicationTests {
 	@Test
 	void testGetAllActorsPaged() {
 		// Create test actors
-		Actor actor1 = new Actor();
-		actor1.setFirstName("Test1");
-		actor1.setLastName("Actor1");
-		actor1.setBornDate(LocalDate.of(1990, 1, 1));
-		Actor savedActor1 = actorService.createActor(actor1);
+		ActorRequest request1 = new ActorRequest();
+		request1.setFirstName("Test1");
+		request1.setLastName("Actor1");
+		request1.setBornDate(LocalDate.of(1990, 1, 1));
 
-		Actor actor2 = new Actor();
-		actor2.setFirstName("Test2");
-		actor2.setLastName("Actor2");
-		actor2.setBornDate(LocalDate.of(1991, 1, 1));
-		Actor savedActor2 = actorService.createActor(actor2);
+		HttpEntity<ActorRequest> createRequest1 = new HttpEntity<>(request1, headers);
+		ResponseEntity<ActorResponse> createResponse1 = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest1,
+				ActorResponse.class
+		);
+		ActorResponse savedActor1 = createResponse1.getBody();
+
+		ActorRequest request2 = new ActorRequest();
+		request2.setFirstName("Test2");
+		request2.setLastName("Actor2");
+		request2.setBornDate(LocalDate.of(1991, 1, 1));
+
+		HttpEntity<ActorRequest> createRequest2 = new HttpEntity<>(request2, headers);
+		ResponseEntity<ActorResponse> createResponse2 = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest2,
+				ActorResponse.class
+		);
+		ActorResponse savedActor2 = createResponse2.getBody();
 
 		// Test get all
 		HttpEntity<Void> request = new HttpEntity<>(headers);
@@ -299,17 +328,31 @@ class ActorsServiceApplicationTests {
 	@Test
 	void testGetAllActorsWithoutPagination() {
 		// Create test actors
-		Actor actor1 = new Actor();
-		actor1.setFirstName("Test1");
-		actor1.setLastName("Actor1");
-		actor1.setBornDate(LocalDate.of(1990, 1, 1));
-		Actor savedActor1 = actorService.createActor(actor1);
+		ActorRequest request1 = new ActorRequest();
+		request1.setFirstName("Test1");
+		request1.setLastName("Actor1");
+		request1.setBornDate(LocalDate.of(1990, 1, 1));
 
-		Actor actor2 = new Actor();
-		actor2.setFirstName("Test2");
-		actor2.setLastName("Actor2");
-		actor2.setBornDate(LocalDate.of(1991, 1, 1));
-		Actor savedActor2 = actorService.createActor(actor2);
+		HttpEntity<ActorRequest> createRequest1 = new HttpEntity<>(request1, headers);
+		ResponseEntity<ActorResponse> createResponse1 = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest1,
+				ActorResponse.class
+		);
+		ActorResponse savedActor1 = createResponse1.getBody();
+
+		ActorRequest request2 = new ActorRequest();
+		request2.setFirstName("Test2");
+		request2.setLastName("Actor2");
+		request2.setBornDate(LocalDate.of(1991, 1, 1));
+
+		HttpEntity<ActorRequest> createRequest2 = new HttpEntity<>(request2, headers);
+		ResponseEntity<ActorResponse> createResponse2 = restTemplate.postForEntity(
+				"http://localhost:" + port + "/api/actors",
+				createRequest2,
+				ActorResponse.class
+		);
+		ActorResponse savedActor2 = createResponse2.getBody();
 
 		// Call /api/actors/all
 		HttpEntity<Void> request = new HttpEntity<>(headers);
